@@ -1,12 +1,10 @@
 from openai import OpenAI
-client = OpenAI()
 
 class GPTFineTune:
     def __init__(self,api_key,training_data,parameters):
         openai.api_key= api_key
         self.training_data = training_data
         self.parameters = parameters
-
 
 # Read the training file
     def reading_training_file(self):
@@ -24,10 +22,10 @@ class GPTFineTune:
 
 parameters = {
     "model" :"gpt-3.5-turbo",
-    "epochs" : 3,
-    "temparature":0.8,
-    "learning_rate":0.001,
-    "batch_size":32
+    "epochs" : 3, # 3-5 if less than 1000, 5-10 if 1000-10000, 10+ if over 10000
+    "temparature":0.8, # higher: variation/risky; lower: focus on response, more accurate;
+    "learning_rate":0.001, # if the dataset is small,eg. 700, start from 0.001 to avoid overfitting
+    "batch_size":32 # 8,16,32 if less than 1000;32,64,128 if 1000-10000; 128,256 if over 10000
 }
 
 training_data_file = "path"
