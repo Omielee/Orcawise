@@ -1,0 +1,71 @@
+import openai
+
+class Trainer:
+    def __init__(self, dataset_length):
+        self.dataset_length = dataset_length
+
+    def calculate_epochs(self, validation_split=0.1):
+        """Calculates the number of epochs based on dataset length and validation split."""
+        return int(self.dataset_length * (1 - validation_split))
+
+    def calculate_batch_size(self, learning_rate_multiplier, target_iterations=10):
+        """Calculate the batch size based on dataset length, learning rate multiplier, and target iterations."""
+        return int(self.dataset_length / (learning_rate_multiplier * target_iterations))
+
+    def calculate_learning_rate(self, base_learning_rate, learning_rate_multiplier):
+        """Calculates the learning rate based on base learning rate and multiplier."""
+        return base_learning_rate * learning_rate_multiplier
+
+    def train_data(self, training_file_id, validation_file_id, model_name, learning_rate_multiplier=0.1, n_epochs=15, batch_size=None):
+        """
+        Trains the data using the provided parameters and calculated hyperparameters.
+        """
+        # Set up OpenAI API connection
+        openai.api_key = "<APIKEY>"
+        
+        # Calculate hyperparameters if not provided
+        if not batch_size:
+            batch_size = self.calculate_batch_size(learning_rate_multiplier)
+
+        # Creationof the fine-tuning job
+        response = openai.FineTuning.create(
+            training_file=training_file_id,
+            validation_file=validation_file_id,
+            model=model_name,
+            hyperparameters={
+                "n_epochs": n_epochs,
+                "batch_size": batch_size,
+                "learning_rate_multiplier": learning_rate_multiplier,
+            },
+        )
+
+        job_id = response.id
+        status = response.status
+
+        print(f'Fine-tuning model with jobID: {job_id}.')
+        print(f"Training Response: {response}")
+        print(f"Training Status: {status}")
+
+        # Retrieve the fine-tuned model (assuming successful training)
+        if status == "completed":
+            result = openai.FineTuning.retrieve(job_id)
+            fine_tuned_model = result.data[0].fine_tuned_model
+            print(f"Fine-tuned Model: {fine_tuned_model}")
+        else:
+            print("Training failed. Fine-tuned model not available.")
+
+
+trainer = Trainer(1000)  #First example by sanpreet
+
+
+#ValidationID and trainId will be retrieved from openAI developer account after uploading. 
+
+# Train the data using calculated or provided hyperparameters
+trainer.train_data(
+    training_file_id="<fileID>",  # Replace with your training file ID
+    validation_file_id="<ValidationFileID>",  
+    model_name="<modelNameThatWeAreUsing>",
+    learning_rate_multiplier=0.3,
+    n_epochs=15,
+)
+
