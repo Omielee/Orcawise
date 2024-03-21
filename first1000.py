@@ -31,14 +31,14 @@ class JSONLinesProcessor:
                 file.write(json_line+'\n') # write the JSON string to the file, one element per line
 
 # Use the class
-processor = JSONLinesProcessor('final_data_chatgpt.jsonl1')
+processor = JSONLinesProcessor('/Users/Alpha/Documents/GitHub/Orcawise/final_data_chatgpt.jsonl1')
 processor.read_shuffle()
 
 # Save the first 1000 data into a new file
-first_1000=processor.get_n_data(1000)
-processor.save_to_file(first_1000,'first_1000.jsonl')
+first_50=processor.get_n_data(50)
+processor.save_to_file(first_50,'first_50.jsonl')
 
 # Save the one random data into a new file
-random_data = [processor.get_random()]
-processor.save_to_file(random_data,'random_data.jsonl')
+# random_data = [processor.get_random()]
+# processor.save_to_file(random_data,'random_data.jsonl')
 
